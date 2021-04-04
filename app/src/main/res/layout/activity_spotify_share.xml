@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SpotifyShareActivity">
+
+    <TextView
+        android:id="@+id/share_songname"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Song Name"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/share_artistname"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Author Name"
+        app:layout_constraintEnd_toEndOf="@+id/share_songname"
+        app:layout_constraintStart_toStartOf="@+id/share_songname"
+        app:layout_constraintTop_toBottomOf="@+id/share_songname" />
+
+    <Button
+        android:id="@+id/share_sendbutton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="172dp"
+        android:onClick="onClick"
+        android:text="Share"
+        app:layout_constraintEnd_toEndOf="@+id/share_artistname"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@+id/share_artistname"
+        app:layout_constraintTop_toBottomOf="@+id/share_artistname" />
+</androidx.constraintlayout.widget.ConstraintLayout>

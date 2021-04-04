@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
@@ -23,6 +25,9 @@ public class TestSpotifyActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test_spotify);
+        Log.d("SpotifyActivity","started");
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference docref = db.collection("users").document(Constants.USER_ID);
 
     }
 
@@ -55,7 +60,7 @@ public class TestSpotifyActivity extends AppCompatActivity {
     }
 
     private void connected() {
-        mSpotifyAppRemote.getPlayerApi().play("spotify:track:37adYGaYaAWTGhBaOzX4Fh");
+       Log.d("SPOTIFY_REMOTE","connected");
     }
 
 }

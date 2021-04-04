@@ -34,8 +34,7 @@ public class MainActivity extends AppCompatActivity {
                 1337
         );
         Log.d("ERRORS???","why");
-        Intent i = new Intent(this,TestSpotifyActivity.class);
-        startActivity(i);
+
 
     }
 
@@ -45,6 +44,8 @@ public class MainActivity extends AppCompatActivity {
             IdpResponse res = IdpResponse.fromResultIntent(data);
             if(resC==RESULT_OK){
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                Intent i = new Intent(this,DisplaySongs.class);
+                startActivity(i);
             }
             else{
                 Log.d("LOGIN_ERROR",res.getError().getMessage());
