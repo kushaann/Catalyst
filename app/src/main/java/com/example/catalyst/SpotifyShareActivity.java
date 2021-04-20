@@ -3,7 +3,9 @@ package com.example.catalyst;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -52,10 +54,57 @@ public class SpotifyShareActivity extends AppCompatActivity {
         Log.d("spotifyshare",text);
         tURI = text;
 
-        AuthenticationRequest.Builder builder = new AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN,redirect);
-        AuthenticationRequest req = builder.build();
-        AuthenticationClient.openLoginActivity(this,reqC,req);
+
         rq = Volley.newRequestQueue(this);
+
+        SharedPreferences sharedPrefs = getApplicationContext().getSharedPreferences(getString(R.string.token_file), Context.MODE_PRIVATE);
+        token = sharedPrefs.getString("token","");
+        if (token == "") {
+            AuthenticationRequest.Builder builder = new AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN,redirect);
+            AuthenticationRequest req = builder.build();
+            AuthenticationClient.openLoginActivity(this,reqC,req);
+
+        }
+        else {
+            JsonObjectRequest TokenChecker = new JsonObjectRequest(Request.Method.GET, Constants.TEST_URL, null, new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    buildUI();
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    AuthenticationRequest.Builder builder = new AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN,redirect);
+                    AuthenticationRequest req = builder.build();
+                    AuthenticationClient.openLoginActivity(SpotifyShareActivity.this,reqC,req);
+                }
+            }){
+                @Override
+                public Map<String,String> getHeaders() throws AuthFailureError {
+                    Log.d("SPOTIFY_AUTH_TOKEN",token);
+                    Map<String,String> params = new HashMap<String,String>();
+                    params.put("Authorization","Bearer " + token);
+                    params.put("Accept","application/json");
+                    params.put("Content-Type","application/json");
+                    return params;
+                }
+            };
+
+            rq.add(TokenChecker);
+
+        }
+
+
+
+
+
+
+
+    }
+
+
+    public void buildUI(){
+        Log.d("UIBUILDER","BUILDINGUI");
         JOR = new JsonObjectRequest(Request.Method.GET, Constants.SPOTIFY_API_URL + tURI, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
@@ -77,6 +126,8 @@ public class SpotifyShareActivity extends AppCompatActivity {
                 Log.d("GET_TRACK_INFO_FAILURE",token + " wtf");
                 Log.d("GET_TRACK_INFO_FAILURE",vError.toString());
                 Log.d("GET_TRACK_INFO_FAILURE",String.valueOf(vError.networkResponse.statusCode));
+                Log.d("GET_TRACK_INFO_FAILURE",vError.toString());
+                Log.d("GET_TRACK_INFO_FAILURE",vError.getMessage());
             }
         }){
             @Override
@@ -89,6 +140,7 @@ public class SpotifyShareActivity extends AppCompatActivity {
                 return params;
             }
         };
+        rq.add(JOR);
 
     }
 
@@ -106,7 +158,13 @@ public class SpotifyShareActivity extends AppCompatActivity {
                 case TOKEN:
                     Log.d("SPOTIFY_AUTH_SUCCESS",res.getAccessToken());
                     token = res.getAccessToken();
-                    rq.add(JOR);
+                    SharedPreferences sharedPrefs = getApplicationContext().getSharedPreferences(getString(R.string.token_file), Context.MODE_PRIVATE);
+                    SharedPreferences.Editor edit = sharedPrefs.edit();
+                    edit.putString("token",token);
+                    edit.apply();
+                    String x = getApplicationContext().getSharedPreferences(getString(R.string.token_file), Context.MODE_PRIVATE).getString("token","not there");
+                    Log.d("TOKEN_WRITER",x);
+                    buildUI();
                     break;
                 case ERROR:
                     Log.d("SPOTIFY_AUTH_ERROR",res.getError());
