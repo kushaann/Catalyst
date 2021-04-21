@@ -3,8 +3,7 @@ package com.example.catalyst;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.security.crypto.EncryptedSharedPreferences;
-import androidx.security.crypto.MasterKeys;
+
 
 import android.content.Context;
 import android.content.Intent;
@@ -13,6 +12,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.volley.AuthFailureError;
@@ -26,11 +26,13 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.spotify.sdk.android.authentication.AuthenticationClient;
 import com.spotify.sdk.android.authentication.AuthenticationRequest;
 import com.spotify.sdk.android.authentication.AuthenticationResponse;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
@@ -141,20 +143,29 @@ public class DisplaySongs extends AppCompatActivity {
                         List<Map<String, String>> x = (List)doc.get("songs2");
                         Log.d("DATABASE_READING",x.toString());
                         for(Map<String,String> y : x){
-                            Log.d("MAP_READING","read");
-                            Log.d("MAP_OUTPUT",y.get("song") + "||" + y.get("msg"));
+                            if(!y.containsKey("placeholder")) {
+                                ret.add(y);
+                                Log.d("MAP_READING", "read");
+                                Log.d("MAP_OUTPUT", y.get("song") + "||" + y.get("msg"));
+
+                                dr.update("songs2",FieldValue.arrayRemove(y));
+                            }
                         }
+//                        Map<String,Object> upd = new HashMap<>();
+//                        upd.put("songs2",FieldValue.delete());
+//                        dr.update(upd);
+
                         try {
                             File songFile = new File(getApplicationContext().getFilesDir(), "SongsList.txt");
                             FileOutputStream fos = new FileOutputStream(songFile,true);
-                            for(Map<String,String> maps : x){
+                            for(Map<String,String> maps : ret){
                                 String t = "";
-                                t += maps.get("song") + "," + maps.get("msg")+"\n";
+                                t += maps.get("uri") + "," + maps.get("msg")+"\n";
                                 fos.write(t.getBytes());
                             }
                             fos.close();
                             Log.d("BUILD_LAYOUT","from db");
-                            buildUIFromMaps(x);
+                            buildUIFromMaps(ret);
                         }
                         catch(IOException e){
                             e.printStackTrace();
@@ -199,6 +210,7 @@ public class DisplaySongs extends AppCompatActivity {
             final TextView tv1 = templayout.findViewById(R.id.SongTitle);
             final TextView tv2 = templayout.findViewById(R.id.ArtistName);
             final TextView tv3 = templayout.findViewById(R.id.Message);
+            final ImageView albumView = templayout.findViewById(R.id.AlbumArt);
             final String msg = songInfo.get("msg");
             String url = Constants.SPOTIFY_API_URL+songInfo.get("uri");
             JsonObjectRequest JOR = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
@@ -210,6 +222,10 @@ public class DisplaySongs extends AppCompatActivity {
                         tv1.setText(songName);
                         tv2.setText(artist);
                         tv3.setText(msg);
+
+                        JSONObject image = response.getJSONObject("album").getJSONArray("images").getJSONObject(0);
+                        new DownloadImagesTask(albumView,DisplaySongs.this).execute(image.getString("url"));
+
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
