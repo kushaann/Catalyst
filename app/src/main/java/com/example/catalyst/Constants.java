@@ -18,5 +18,6 @@ class Constants {
     public static final String redirect = "http://com.example.catalyst/callback";
     public static final String CLIENT_ID = "eaf16244a7d0462c8c3a92856324fd1f";
     public static final String TEST_URL = SPOTIFY_API_URL + "6DCZcSspjsKoFjzjrWoCdn";
+    public static final String SONG_MAP_NAME = "songs2";
 
 }

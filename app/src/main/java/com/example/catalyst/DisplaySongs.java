@@ -24,6 +24,8 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
@@ -57,6 +59,9 @@ public class DisplaySongs extends AppCompatActivity {
     private static final String redirect = "http://com.example.catalyst/callback";
     private static final String CLIENT_ID = "eaf16244a7d0462c8c3a92856324fd1f";
     private int viewTag = 0;
+    private String USER_UID;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,6 +70,8 @@ public class DisplaySongs extends AppCompatActivity {
         rq = Volley.newRequestQueue(this);
         SharedPreferences sharedPrefs = getApplicationContext().getSharedPreferences(getString(R.string.token_file), Context.MODE_PRIVATE);
         token = sharedPrefs.getString("token","");
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        USER_UID = user.getUid();
         if (token == "") {
             AuthenticationRequest.Builder builder = new AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN,redirect);
             AuthenticationRequest req = builder.build();
@@ -132,7 +139,7 @@ public class DisplaySongs extends AppCompatActivity {
 
     public void queryDatabase() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        DocumentReference dr = db.collection("users").document(Constants.USER_ID);
+        DocumentReference dr = db.collection("users").document(USER_UID);
         final List<Map<String,String>> ret = new ArrayList<>();
         dr.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -140,7 +147,7 @@ public class DisplaySongs extends AppCompatActivity {
                 if(task.isSuccessful()){
                     DocumentSnapshot doc = task.getResult();
                     if(doc.exists()){
-                        List<Map<String, String>> x = (List)doc.get("songs2");
+                        List<Map<String, String>> x = (List)doc.get(Constants.SONG_MAP_NAME);
                         Log.d("DATABASE_READING",x.toString());
                         for(Map<String,String> y : x){
                             if(!y.containsKey("placeholder")) {
@@ -148,11 +155,11 @@ public class DisplaySongs extends AppCompatActivity {
                                 Log.d("MAP_READING", "read");
                                 Log.d("MAP_OUTPUT", y.get("song") + "||" + y.get("msg"));
 
-                                dr.update("songs2",FieldValue.arrayRemove(y));
+                                dr.update(Constants.SONG_MAP_NAME,FieldValue.arrayRemove(y));
                             }
                         }
 //                        Map<String,Object> upd = new HashMap<>();
-//                        upd.put("songs2",FieldValue.delete());
+//                        upd.put(Constants.SONG_MAP_NAME,FieldValue.delete());
 //                        dr.update(upd);
 
                         try {

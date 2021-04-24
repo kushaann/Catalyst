@@ -9,6 +9,8 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.volley.AuthFailureError;
@@ -20,6 +22,8 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
@@ -43,6 +47,8 @@ public class SpotifyShareActivity extends AppCompatActivity {
     private String token = "";
     private RequestQueue rq;
     private JsonObjectRequest JOR;
+    private String USER_UID;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,6 +59,8 @@ public class SpotifyShareActivity extends AppCompatActivity {
         text = text.substring(text.indexOf("track/")+6,text.indexOf("?"));
         Log.d("spotifyshare",text);
         tURI = text;
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        USER_UID = user.getUid();
 
 
         rq = Volley.newRequestQueue(this);
@@ -111,8 +119,13 @@ public class SpotifyShareActivity extends AppCompatActivity {
                 try{
                     TextView title = findViewById(R.id.share_songname);
                     TextView artist = findViewById(R.id.share_artistname);
+                    ImageView albumArt = findViewById(R.id.shareAlbumArt);
+
                     title.setText(response.getString("name"));
                     artist.setText(response.getJSONArray("artists").getJSONObject(0).getString("name"));
+                    JSONObject image = response.getJSONObject("album").getJSONArray("images").getJSONObject(0);
+                    new DownloadImagesTask(albumArt,SpotifyShareActivity.this).execute(image.getString("url"));
+
                     Log.d("share_ui",response.getString("name"));
                     Log.d("share_ui",response.getJSONArray("artists").getJSONObject(0).getString("name"));
                 }
@@ -145,9 +158,15 @@ public class SpotifyShareActivity extends AppCompatActivity {
     }
 
     public void onClick(View view){
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        DocumentReference docref = db.collection("users").document(Constants.USER_ID);
-        docref.update("songs", FieldValue.arrayUnion(tURI));
+        String msg = ((EditText)findViewById(R.id.messageSendField)).getText().toString();
+        //have tURI
+
+//
+//        FirebaseFirestore db = FirebaseFirestore.getInstance();
+//        DocumentReference docref = db.collection("users").document(Constants.USER_ID);
+//
+//
+//        docref.update("songs", FieldValue.arrayUnion(tURI));
     }
 
     protected void onActivityResult(int reqCode, int resCode, Intent i){
