@@ -100,9 +100,11 @@ public class FriendsListActivity extends AppCompatActivity {
         for(Map.Entry<String,Boolean> pair : sendList.entrySet()){
             Boolean toSend = pair.getValue();
             if(toSend){
+                new UpdateFriendCounterTask(USER_UID).execute(pair.getKey());
                 db.collection("users").document(pair.getKey()).update("songs2",FieldValue.arrayUnion(sendObj));
             }
         }
+        db.collection("users").document(USER_UID).update("songs_shared_out",FieldValue.increment(1));
         finish();
 
     }

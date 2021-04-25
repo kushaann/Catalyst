@@ -32,6 +32,9 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.spotify.android.appremote.api.ConnectionParams;
+import com.spotify.android.appremote.api.Connector;
+import com.spotify.android.appremote.api.SpotifyAppRemote;
 import com.spotify.sdk.android.authentication.AuthenticationClient;
 import com.spotify.sdk.android.authentication.AuthenticationRequest;
 import com.spotify.sdk.android.authentication.AuthenticationResponse;
@@ -62,12 +65,29 @@ public class DisplaySongs extends AppCompatActivity {
     private static final String CLIENT_ID = "eaf16244a7d0462c8c3a92856324fd1f";
     private int viewTag = 0;
     private String USER_UID;
-
+    private SpotifyAppRemote remoteSpotifyConnection;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_songs);
+        ConnectionParams connectionParams =
+                new ConnectionParams.Builder(Constants.CLIENT_ID)
+                        .setRedirectUri(Constants.redirect)
+                        .showAuthView(true)
+                        .build();
+        SpotifyAppRemote.connect(this, connectionParams, new Connector.ConnectionListener() {
+            @Override
+            public void onConnected(SpotifyAppRemote spotifyAppRemote) {
+                remoteSpotifyConnection = spotifyAppRemote;
+            }
+
+            @Override
+            public void onFailure(Throwable throwable) {
+                Log.d("SPOTIFY_REMOTE","failed");
+            }
+        });
+
 
         rq = Volley.newRequestQueue(this);
         SharedPreferences sharedPrefs = getApplicationContext().getSharedPreferences(getString(R.string.token_file), Context.MODE_PRIVATE);
@@ -112,6 +132,11 @@ public class DisplaySongs extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onResume(){
+        super.onResume();
+        queryDatabase();
+    }
 
     protected void onActivityResult(int reqCode, int resCode, Intent i){
         super.onActivityResult(reqCode,resCode,i);
@@ -154,6 +179,16 @@ public class DisplaySongs extends AppCompatActivity {
         }
     }
 
+    public View.OnClickListener getClicker(String playableURI){
+        return new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                remoteSpotifyConnection.getPlayerApi().play(playableURI);
+                view.setOnClickListener(getClicker(playableURI));
+            }
+        };
+    }
+
     public void AddFriends(View view){
         Intent i = new Intent(this,AddFriendActivity.class);
         startActivity(i);
@@ -171,15 +206,17 @@ public class DisplaySongs extends AppCompatActivity {
                     if(doc.exists()){
                         List<Map<String, String>> x = (List)doc.get(Constants.SONG_MAP_NAME);
                         Log.d("DATABASE_READING",x.toString());
+                        int songsRecieved = 0;
                         for(Map<String,String> y : x){
                             if(!y.containsKey("placeholder")) {
                                 ret.add(y);
                                 Log.d("MAP_READING", "read");
                                 Log.d("MAP_OUTPUT", y.get("song") + "||" + y.get("msg"));
-
+                                songsRecieved++;
                                 dr.update(Constants.SONG_MAP_NAME,FieldValue.arrayRemove(y));
                             }
                         }
+                        dr.update("songs_received",FieldValue.increment(songsRecieved));
 //                        Map<String,Object> upd = new HashMap<>();
 //                        upd.put(Constants.SONG_MAP_NAME,FieldValue.delete());
 //                        dr.update(upd);
@@ -239,6 +276,7 @@ public class DisplaySongs extends AppCompatActivity {
             templayout.setTag(viewTag);
             viewTag++;
             final TextView tv1 = templayout.findViewById(R.id.SongTitle);
+            tv1.setSelected(true);
             final TextView tv2 = templayout.findViewById(R.id.ArtistName);
             final TextView tv3 = templayout.findViewById(R.id.Message);
             final ImageView albumView = templayout.findViewById(R.id.AlbumArt);
@@ -258,6 +296,9 @@ public class DisplaySongs extends AppCompatActivity {
                         tv4.setText(sender);
                         JSONObject image = response.getJSONObject("album").getJSONArray("images").getJSONObject(0);
                         new DownloadImagesTask(albumView,DisplaySongs.this).execute(image.getString("url"));
+                        String playableURI = "spotify:track:"+songInfo.get("uri");
+                        templayout.setOnClickListener(getClicker(playableURI));
+
 
                     } catch (JSONException e) {
                         e.printStackTrace();

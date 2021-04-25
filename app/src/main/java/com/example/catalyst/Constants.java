@@ -19,5 +19,6 @@ class Constants {
     public static final String CLIENT_ID = "eaf16244a7d0462c8c3a92856324fd1f";
     public static final String TEST_URL = SPOTIFY_API_URL + "6DCZcSspjsKoFjzjrWoCdn";
     public static final String SONG_MAP_NAME = "songs2";
+    public static final String TEST_URI = "spotify:track:3kYZIJOtlxX0YhaNz2j4ld";
 
 }
