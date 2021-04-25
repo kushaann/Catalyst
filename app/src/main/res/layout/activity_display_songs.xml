@@ -9,13 +9,36 @@
     <ScrollView
         android:id="@+id/scrollwrapper"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        tools:layout_editor_absoluteX="-45dp"
+        tools:layout_editor_absoluteY="16dp">
+
         <LinearLayout
             android:id="@+id/scroller"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            />
+            android:orientation="vertical" />
     </ScrollView>
+
+    <Button
+        android:id="@+id/button4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:onClick="clearFile"
+        android:text="Clear"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/AddFriendButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="AddFriends"
+        android:text="Add Friends"
+        app:layout_constraintBottom_toTopOf="@+id/button4"
+        app:layout_constraintEnd_toEndOf="@+id/button4"
+        app:layout_constraintStart_toStartOf="@+id/button4" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

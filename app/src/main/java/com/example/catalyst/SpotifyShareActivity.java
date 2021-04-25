@@ -65,42 +65,56 @@ public class SpotifyShareActivity extends AppCompatActivity {
 
         rq = Volley.newRequestQueue(this);
 
-        SharedPreferences sharedPrefs = getApplicationContext().getSharedPreferences(getString(R.string.token_file), Context.MODE_PRIVATE);
-        token = sharedPrefs.getString("token","");
-        if (token == "") {
-            AuthenticationRequest.Builder builder = new AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN,redirect);
-            AuthenticationRequest req = builder.build();
-            AuthenticationClient.openLoginActivity(this,reqC,req);
 
-        }
-        else {
-            JsonObjectRequest TokenChecker = new JsonObjectRequest(Request.Method.GET, Constants.TEST_URL, null, new Response.Listener<JSONObject>() {
-                @Override
-                public void onResponse(JSONObject response) {
-                    buildUI();
-                }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    AuthenticationRequest.Builder builder = new AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN,redirect);
-                    AuthenticationRequest req = builder.build();
-                    AuthenticationClient.openLoginActivity(SpotifyShareActivity.this,reqC,req);
-                }
-            }){
-                @Override
-                public Map<String,String> getHeaders() throws AuthFailureError {
-                    Log.d("SPOTIFY_AUTH_TOKEN",token);
-                    Map<String,String> params = new HashMap<String,String>();
-                    params.put("Authorization","Bearer " + token);
-                    params.put("Accept","application/json");
-                    params.put("Content-Type","application/json");
-                    return params;
-                }
-            };
+        AuthenticationRequest.Builder builder = new AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN,redirect);
+        AuthenticationRequest req = builder.build();
+        AuthenticationClient.openLoginActivity(this,reqC,req);
 
-            rq.add(TokenChecker);
-
-        }
+//        SharedPreferences sharedPrefs = getApplicationContext().getSharedPreferences(getString(R.string.token_file), Context.MODE_PRIVATE);
+//        token = sharedPrefs.getString("token","");
+//        if (token == "") {
+//            AuthenticationRequest.Builder builder = new AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN,redirect);
+//            AuthenticationRequest req = builder.build();
+//            AuthenticationClient.openLoginActivity(this,reqC,req);
+//
+//        }
+//        else {
+//            JsonObjectRequest TokenChecker = new JsonObjectRequest(Request.Method.GET, Constants.TEST_URL, null, new Response.Listener<JSONObject>() {
+//                @Override
+//                public void onResponse(JSONObject response) {
+//                    Log.d("SPOTIFY_SHARE","token check response processed");
+//                    Log.d("SPOTIFY_SHARE_TOKEN_CHECK",token);
+//                    try{
+//                        Log.d("SPOTIFY_SHARE_TOKEN",response.getString("name"));
+//                    }
+//                    catch(JSONException e){
+//                        e.printStackTrace();
+//                    }
+//                    buildUI();
+//                }
+//            }, new Response.ErrorListener() {
+//                @Override
+//                public void onErrorResponse(VolleyError error) {
+//                    Log.d("SPOTIFY_SHARE","TOKEN_CHECK_ERR");
+//                    AuthenticationRequest.Builder builder = new AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN,redirect);
+//                    AuthenticationRequest req = builder.build();
+//                    AuthenticationClient.openLoginActivity(SpotifyShareActivity.this,reqC,req);
+//                }
+//            }){
+//                @Override
+//                public Map<String,String> getHeaders() throws AuthFailureError {
+//                    Log.d("SPOTIFY_AUTH_TOKEN",token);
+//                    Map<String,String> params = new HashMap<String,String>();
+//                    params.put("Authorization","Bearer " + token);
+//                    params.put("Accept","application/json");
+//                    params.put("Content-Type","application/json");
+//                    return params;
+//                }
+//            };
+//
+//            rq.add(TokenChecker);
+//
+//        }
 
 
 
@@ -140,7 +154,7 @@ public class SpotifyShareActivity extends AppCompatActivity {
                 Log.d("GET_TRACK_INFO_FAILURE",vError.toString());
                 Log.d("GET_TRACK_INFO_FAILURE",String.valueOf(vError.networkResponse.statusCode));
                 Log.d("GET_TRACK_INFO_FAILURE",vError.toString());
-                Log.d("GET_TRACK_INFO_FAILURE",vError.getMessage());
+                //Log.d("GET_TRACK_INFO_FAILURE",vError.getMessage());
             }
         }){
             @Override
@@ -159,6 +173,10 @@ public class SpotifyShareActivity extends AppCompatActivity {
 
     public void onClick(View view){
         String msg = ((EditText)findViewById(R.id.messageSendField)).getText().toString();
+        Intent i = new Intent(this,FriendsListActivity.class);
+        i.putExtra("msg",msg);
+        i.putExtra("uri",tURI);
+        startActivity(i);
         //have tURI
 
 //

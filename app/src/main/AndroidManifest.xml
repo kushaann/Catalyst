@@ -9,9 +9,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".FriendsListActivity"></activity>
+        <activity android:name=".AddFriendActivity"></activity>
+        <activity android:name=".AddNameActivity" />
+        <activity android:name=".FriendsListActivity" />
         <activity android:name=".DisplaySongs" />
-        <activity android:name=".SpotifyShareActivity">
+        <activity
+            android:name=".SpotifyShareActivity"
+            android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
 

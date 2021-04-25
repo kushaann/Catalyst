@@ -8,6 +8,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -137,6 +138,23 @@ public class DisplaySongs extends AppCompatActivity {
     }
 
 
+    public void clearFile(View view){
+        try{
+            File songFile = new File(getApplicationContext().getFilesDir(), "SongsList.txt");
+            FileOutputStream fos = new FileOutputStream(songFile,false);
+            fos.write("".getBytes());
+            fos.close();
+        }
+        catch(IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    public void AddFriends(View view){
+        Intent i = new Intent(this,AddFriendActivity.class);
+        startActivity(i);
+    }
+
     public void queryDatabase() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference dr = db.collection("users").document(USER_UID);
@@ -167,7 +185,7 @@ public class DisplaySongs extends AppCompatActivity {
                             FileOutputStream fos = new FileOutputStream(songFile,true);
                             for(Map<String,String> maps : ret){
                                 String t = "";
-                                t += maps.get("uri") + "," + maps.get("msg")+"\n";
+                                t += maps.get("uri") + "," + maps.get("msg")+ "," + maps.get("sender") + "\n";
                                 fos.write(t.getBytes());
                             }
                             fos.close();
@@ -195,6 +213,7 @@ public class DisplaySongs extends AppCompatActivity {
                 String[] parts = line.split(",");
                 temp.put("uri",parts[0]);
                 temp.put("msg",parts[1]);
+                temp.put("sender",parts[2]);
                 loader.add(temp);
             }
             Log.d("BUILD_LAYOUT","from file");
@@ -212,13 +231,16 @@ public class DisplaySongs extends AppCompatActivity {
         for(Map<String,String> songInfo : songs){
             Log.d("BUILD_LAYOUT",songs.toString());
             final ConstraintLayout templayout = (ConstraintLayout)getLayoutInflater().inflate(R.layout.songblock,null);
+            //templayout.setBackgroundColor(Color.parseColor("#883FF5"));
             templayout.setTag(viewTag);
             viewTag++;
             final TextView tv1 = templayout.findViewById(R.id.SongTitle);
             final TextView tv2 = templayout.findViewById(R.id.ArtistName);
             final TextView tv3 = templayout.findViewById(R.id.Message);
             final ImageView albumView = templayout.findViewById(R.id.AlbumArt);
+            final TextView tv4 = templayout.findViewById(R.id.senderField);
             final String msg = songInfo.get("msg");
+            final String sender = songInfo.containsKey("sender") ? songInfo.get("sender") : "anonymous";
             String url = Constants.SPOTIFY_API_URL+songInfo.get("uri");
             JsonObjectRequest JOR = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
                 @Override
@@ -229,7 +251,7 @@ public class DisplaySongs extends AppCompatActivity {
                         tv1.setText(songName);
                         tv2.setText(artist);
                         tv3.setText(msg);
-
+                        tv4.setText(sender);
                         JSONObject image = response.getJSONObject("album").getJSONArray("images").getJSONObject(0);
                         new DownloadImagesTask(albumView,DisplaySongs.this).execute(image.getString("url"));
 
@@ -271,6 +293,7 @@ public class DisplaySongs extends AppCompatActivity {
             viewTag++;
             final TextView tv1 = templayout.findViewById(R.id.SongTitle);
             final TextView tv2 = templayout.findViewById(R.id.ArtistName);
+
             String url = Constants.SPOTIFY_API_URL+song;
             JsonObjectRequest JOR = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
                 @Override
