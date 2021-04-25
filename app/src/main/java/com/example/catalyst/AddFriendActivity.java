@@ -84,6 +84,7 @@ public class AddFriendActivity extends AppCompatActivity {
                                     yesBtn.setVisibility(View.GONE);
                                     noBtn.setVisibility(View.GONE);
 
+
                                 }
                             });
                             noBtn.setOnClickListener(new View.OnClickListener() {
