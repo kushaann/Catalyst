@@ -4,10 +4,15 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import android.content.ClipboardManager;
+import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -25,6 +30,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executor;
 
 public class AddFriendActivity extends AppCompatActivity {
 
@@ -38,6 +44,11 @@ public class AddFriendActivity extends AppCompatActivity {
         USER_UID = user.getUid();
         startBuild();
 
+    }
+
+    public void sendRequest(View view){
+        String fr = ((EditText)findViewById(R.id.requestNameField)).getText().toString();
+        new AddFriendTask(fr,USER_UID).execute();
     }
 
     public void startBuild() {
@@ -56,10 +67,15 @@ public class AddFriendActivity extends AppCompatActivity {
         });
     }
 
+    public void copyToClipboard(View view){
+        ClipboardManager clipboard = (ClipboardManager)getSystemService(Context.CLIPBOARD_SERVICE);
+        clipboard.setText(USER_UID);
+    }
+
 
     public void buildUI(List<String> pending){
         TextView displayID = (TextView)findViewById(R.id.idDisplayField);
-        displayID.setText("Your ID: " + USER_UID);
+        displayID.setText("Your ID(tap to copy): " + USER_UID);
         if(pending.size() > 0){
             FirebaseFirestore db = FirebaseFirestore.getInstance();
             DocumentReference dr = db.collection("userinfo").document("master");
@@ -79,10 +95,11 @@ public class AddFriendActivity extends AppCompatActivity {
                                 @Override
                                 public void onClick(View view) {
                                     db.collection("users").document(USER_UID).update("friends", FieldValue.arrayUnion(pender));
-                                    //db.collection("users").document(pender).update("friends",FieldValue.arrayUnion(USER_UID));
+                                    db.collection("users").document(pender).update("friends",FieldValue.arrayUnion(USER_UID));
                                     db.collection("users").document(USER_UID).update("pending_friends",FieldValue.arrayRemove(pender));
-                                    yesBtn.setVisibility(View.GONE);
-                                    noBtn.setVisibility(View.GONE);
+//                                    yesBtn.setVisibility(View.GONE);
+//                                    noBtn.setVisibility(View.GONE);
+                                    templayout.setVisibility(View.GONE);
 
                                 }
                             });
@@ -90,8 +107,9 @@ public class AddFriendActivity extends AppCompatActivity {
                                 @Override
                                 public void onClick(View view) {
                                     db.collection("users").document(USER_UID).update("pending_friends",FieldValue.arrayRemove(pender));
-                                    yesBtn.setVisibility(View.GONE);
-                                    noBtn.setVisibility(View.GONE);
+//                                    yesBtn.setVisibility(View.GONE);
+//                                    noBtn.setVisibility(View.GONE);
+                                    templayout.setVisibility(View.GONE);
                                 }
                             });
                             scrollwrap.addView(templayout);

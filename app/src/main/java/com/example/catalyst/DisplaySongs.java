@@ -32,6 +32,9 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.spotify.android.appremote.api.ConnectionParams;
+import com.spotify.android.appremote.api.Connector;
+import com.spotify.android.appremote.api.SpotifyAppRemote;
 import com.spotify.sdk.android.authentication.AuthenticationClient;
 import com.spotify.sdk.android.authentication.AuthenticationRequest;
 import com.spotify.sdk.android.authentication.AuthenticationResponse;
@@ -62,12 +65,29 @@ public class DisplaySongs extends AppCompatActivity {
     private static final String CLIENT_ID = "eaf16244a7d0462c8c3a92856324fd1f";
     private int viewTag = 0;
     private String USER_UID;
-
+    private SpotifyAppRemote remoteSpotifyConnection;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_songs);
+        ConnectionParams connectionParams =
+                new ConnectionParams.Builder(Constants.CLIENT_ID)
+                        .setRedirectUri(Constants.redirect)
+                        .showAuthView(true)
+                        .build();
+        SpotifyAppRemote.connect(this, connectionParams, new Connector.ConnectionListener() {
+            @Override
+            public void onConnected(SpotifyAppRemote spotifyAppRemote) {
+                remoteSpotifyConnection = spotifyAppRemote;
+            }
+
+            @Override
+            public void onFailure(Throwable throwable) {
+                Log.d("SPOTIFY_REMOTE","failed");
+            }
+        });
+
 
         rq = Volley.newRequestQueue(this);
         SharedPreferences sharedPrefs = getApplicationContext().getSharedPreferences(getString(R.string.token_file), Context.MODE_PRIVATE);
@@ -152,6 +172,16 @@ public class DisplaySongs extends AppCompatActivity {
         catch(IOException e){
             e.printStackTrace();
         }
+    }
+
+    public View.OnClickListener getClicker(String playableURI){
+        return new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                remoteSpotifyConnection.getPlayerApi().play(playableURI);
+                view.setOnClickListener(getClicker(playableURI));
+            }
+        };
     }
 
     public void AddFriends(View view){
@@ -258,6 +288,9 @@ public class DisplaySongs extends AppCompatActivity {
                         tv4.setText(sender);
                         JSONObject image = response.getJSONObject("album").getJSONArray("images").getJSONObject(0);
                         new DownloadImagesTask(albumView,DisplaySongs.this).execute(image.getString("url"));
+                        String playableURI = "spotify:track:"+songInfo.get("uri");
+                        templayout.setOnClickListener(getClicker(playableURI));
+
 
                     } catch (JSONException e) {
                         e.printStackTrace();

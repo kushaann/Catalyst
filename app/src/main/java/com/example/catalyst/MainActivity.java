@@ -22,6 +22,7 @@ import com.google.firebase.firestore.SetOptions;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -73,6 +74,16 @@ public class MainActivity extends AppCompatActivity {
                     String USER_UID = user.getUid();
                     m.put(USER_UID,user.getDisplayName());
                     dr.set(m, SetOptions.merge());
+                    Map<String,Object> initInfo = new HashMap<>();
+                    initInfo.put("pending_friends",new ArrayList());
+                    initInfo.put("friends", new ArrayList());
+                    Map<String,Boolean> tempM = new HashMap<>();
+                    tempM.put("placeholder",true);
+                    List<Map> tempL = new ArrayList<>();
+                    tempL.add(tempM);
+                    initInfo.put(Constants.SONG_MAP_NAME,tempL);
+                    DocumentReference userDoc = db.collection("users").document(USER_UID);
+                    userDoc.set(initInfo);
                 }
                 Intent i = new Intent(this,DisplaySongs.class);
                 startActivity(i);
