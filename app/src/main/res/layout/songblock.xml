@@ -5,8 +5,16 @@
     android:id="@+id/constraintLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#00B12929"
+    android:background="#1E1E1E"
     android:clipToPadding="false">
+
+    <View
+        android:id="@+id/divider2"
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:background="#FDFDFD"
+        app:layout_constraintTop_toBottomOf="@+id/innerMenuLayout"
+        tools:layout_editor_absoluteX="5dp" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/innerMenuLayout"
@@ -30,13 +38,16 @@
 
         <TextView
             android:id="@+id/SongTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="311dp"
+            android:layout_height="30dp"
             android:layout_marginStart="4dp"
             android:layout_marginTop="16dp"
+            android:ellipsize="marquee"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:singleLine="true"
             android:text="TextView"
-            android:textColor="#050505"
-            android:textSize="20dp"
+            android:textColor="#FFFFFF"
+            android:textSize="18dp"
             android:textStyle="normal"
             app:layout_constraintStart_toEndOf="@+id/AlbumArt"
             app:layout_constraintTop_toTopOf="parent" />
@@ -49,7 +60,7 @@
             android:layout_marginTop="8dp"
             android:fontFamily="sans-serif"
             android:text="TextView"
-            android:textColor="#000000"
+            android:textColor="#FFFFFF"
             android:textSize="14dp"
             android:textStyle="normal"
             app:layout_constraintStart_toEndOf="@+id/AlbumArt"
@@ -59,7 +70,7 @@
             android:id="@+id/Message"
             android:layout_width="308dp"
             android:layout_height="92dp"
-            android:textColor="#090909"
+            android:textColor="#FFFFFF"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
@@ -73,21 +84,13 @@
             android:layout_height="82dp"
             android:layout_marginTop="8dp"
             android:text="TextView"
-            android:textColor="#000000"
+            android:textColor="#FFFFFF"
             app:layout_constraintEnd_toEndOf="@+id/AlbumArt"
             app:layout_constraintHorizontal_bias="0.47"
             app:layout_constraintStart_toStartOf="@+id/AlbumArt"
             app:layout_constraintTop_toBottomOf="@+id/AlbumArt" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <View
-        android:id="@+id/divider2"
-        android:layout_width="match_parent"
-        android:layout_height="5dp"
-        android:background="?android:attr/listDivider"
-        app:layout_constraintTop_toBottomOf="@+id/innerMenuLayout"
-        tools:layout_editor_absoluteX="5dp" />
 
     <!--<Button-->
     <!--android:id="@+id/deletesong"-->

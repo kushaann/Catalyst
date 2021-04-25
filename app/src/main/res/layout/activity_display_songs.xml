@@ -10,8 +10,8 @@
         android:id="@+id/scrollwrapper"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:layout_editor_absoluteX="-45dp"
-        tools:layout_editor_absoluteY="16dp">
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="54dp">
 
         <LinearLayout
             android:id="@+id/scroller"

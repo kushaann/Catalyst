@@ -8,9 +8,9 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-
         android:theme="@style/AppTheme.NoActionBar">
-        <activity android:name=".AddFriendActivity"></activity>
+        <activity android:name=".ProfileActivity"></activity>
+        <activity android:name=".AddFriendActivity" />
         <activity android:name=".AddNameActivity" />
         <activity android:name=".FriendsListActivity" />
         <activity android:name=".DisplaySongs" />

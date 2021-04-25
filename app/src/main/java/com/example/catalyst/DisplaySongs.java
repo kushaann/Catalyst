@@ -132,6 +132,11 @@ public class DisplaySongs extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onResume(){
+        super.onResume();
+        queryDatabase();
+    }
 
     protected void onActivityResult(int reqCode, int resCode, Intent i){
         super.onActivityResult(reqCode,resCode,i);
@@ -201,15 +206,17 @@ public class DisplaySongs extends AppCompatActivity {
                     if(doc.exists()){
                         List<Map<String, String>> x = (List)doc.get(Constants.SONG_MAP_NAME);
                         Log.d("DATABASE_READING",x.toString());
+                        int songsRecieved = 0;
                         for(Map<String,String> y : x){
                             if(!y.containsKey("placeholder")) {
                                 ret.add(y);
                                 Log.d("MAP_READING", "read");
                                 Log.d("MAP_OUTPUT", y.get("song") + "||" + y.get("msg"));
-
+                                songsRecieved++;
                                 dr.update(Constants.SONG_MAP_NAME,FieldValue.arrayRemove(y));
                             }
                         }
+                        dr.update("songs_received",FieldValue.increment(songsRecieved));
 //                        Map<String,Object> upd = new HashMap<>();
 //                        upd.put(Constants.SONG_MAP_NAME,FieldValue.delete());
 //                        dr.update(upd);
@@ -269,6 +276,7 @@ public class DisplaySongs extends AppCompatActivity {
             templayout.setTag(viewTag);
             viewTag++;
             final TextView tv1 = templayout.findViewById(R.id.SongTitle);
+            tv1.setSelected(true);
             final TextView tv2 = templayout.findViewById(R.id.ArtistName);
             final TextView tv3 = templayout.findViewById(R.id.Message);
             final ImageView albumView = templayout.findViewById(R.id.AlbumArt);

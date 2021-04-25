@@ -82,10 +82,19 @@ public class MainActivity extends AppCompatActivity {
                     List<Map> tempL = new ArrayList<>();
                     tempL.add(tempM);
                     initInfo.put(Constants.SONG_MAP_NAME,tempL);
+
+                    initInfo.put("songs_shared_out",0);
+                    initInfo.put("songs_received",0);
+
+                    Map<String,Long> fCounter = new HashMap<>();
+                    initInfo.put("friend_counter",fCounter);
+
                     DocumentReference userDoc = db.collection("users").document(USER_UID);
+
                     userDoc.set(initInfo);
                 }
                 Intent i = new Intent(this,DisplaySongs.class);
+
                 startActivity(i);
             }
             else{
