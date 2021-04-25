@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.volley.AuthFailureError;
@@ -144,6 +145,9 @@ public class DisplaySongs extends AppCompatActivity {
             FileOutputStream fos = new FileOutputStream(songFile,false);
             fos.write("".getBytes());
             fos.close();
+            LinearLayout toClear = (LinearLayout)findViewById(R.id.scroller);
+            toClear.removeAllViews();
+
         }
         catch(IOException e){
             e.printStackTrace();

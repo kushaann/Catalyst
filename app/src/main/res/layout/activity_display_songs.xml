@@ -33,10 +33,10 @@
 
     <Button
         android:id="@+id/AddFriendButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:background="@drawable/addicon"
         android:onClick="AddFriends"
-        android:text="Add Friends"
         app:layout_constraintBottom_toTopOf="@+id/button4"
         app:layout_constraintEnd_toEndOf="@+id/button4"
         app:layout_constraintStart_toStartOf="@+id/button4" />
