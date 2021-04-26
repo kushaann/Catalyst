@@ -189,6 +189,11 @@ public class DisplaySongs extends AppCompatActivity {
         };
     }
 
+    public void seeProfile(View view){
+        Intent i = new Intent(this,ProfileActivity.class);
+        startActivity(i);
+    }
+
     public void AddFriends(View view){
         Intent i = new Intent(this,AddFriendActivity.class);
         startActivity(i);

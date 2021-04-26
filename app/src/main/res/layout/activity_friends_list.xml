@@ -9,14 +9,16 @@
     <ScrollView
         android:id="@+id/friendsscrollwrapper"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="#1E1E1E">
 
 
         <LinearLayout
             android:id="@+id/friendsscroller"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"></LinearLayout>
+            android:orientation="vertical"
+            ></LinearLayout>
     </ScrollView>
 
     <Button

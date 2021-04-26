@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#333333"
     tools:context=".ProfileActivity">
 
     <View
@@ -32,6 +33,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="177dp"
         android:text="TextView"
+        android:textColor="#FFFFFF"
         android:textSize="30dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.507"
@@ -59,6 +61,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:text="Songs You've Shared"
+        android:textColor="#FFFFFF"
         app:layout_constraintEnd_toStartOf="@+id/divider5"
         app:layout_constraintHorizontal_bias="0.486"
         app:layout_constraintStart_toStartOf="parent"
@@ -70,6 +73,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:text="Songs Received"
+        android:textColor="#FFFFFF"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.483"
         app:layout_constraintStart_toEndOf="@+id/divider5"
@@ -81,6 +85,7 @@
         android:layout_height="21dp"
         android:layout_marginTop="16dp"
         android:text="#"
+        android:textColor="#FFFFFF"
         app:layout_constraintEnd_toEndOf="@+id/textView4"
         app:layout_constraintStart_toStartOf="@+id/textView4"
         app:layout_constraintTop_toBottomOf="@+id/textView4" />
@@ -91,6 +96,7 @@
         android:layout_height="21dp"
         android:layout_marginTop="16dp"
         android:text="#"
+        android:textColor="#FFFFFFFF"
         app:layout_constraintEnd_toEndOf="@+id/textView5"
         app:layout_constraintHorizontal_bias="0.523"
         app:layout_constraintStart_toStartOf="@+id/textView5"
